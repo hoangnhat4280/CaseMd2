@@ -1,9 +1,12 @@
-package controller.book;
+package controller;
 
 import model.Book;
+import model.LoanRecord;
+import model.Member;
 import storage.IReadWriteFile;
 import storage.ReadWriteBook;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -11,7 +14,29 @@ import java.util.Scanner;
 public class BookController implements IBookController {
     static IReadWriteFile iReadWriteFile = ReadWriteBook.getInstance();
     public static List<Book> books = iReadWriteFile.readBooks();
+    private List<Member> members;  // Danh sách thành viên
+    private List<LoanRecord> loanRecords;  // Danh sách loanRecords
     private Scanner scanner = new Scanner(System.in);
+
+    // Constructor thêm members và loanRecords nếu cần thiết
+    public BookController(List<Member> members, List<LoanRecord> loanRecords) {
+        this.members = members;
+        this.loanRecords = loanRecords;
+    }
+
+    public BookController() {
+        // Khởi tạo mặc định nếu chưa có members và loanRecords
+        this.members = new ArrayList<>();
+        this.loanRecords = new ArrayList<>();
+    }
+    @Override
+    public void borrowBook() {
+    }
+
+    @Override
+    public void returnBook() {
+
+    }
 
     @Override
     public List<Book> list() {
@@ -52,6 +77,7 @@ public class BookController implements IBookController {
         }
     }
 
+    // Lấy thông tin sách từ người dùng
     public Book getBookFromUser() {
         int id = -1;
         boolean valid = false;
@@ -123,5 +149,68 @@ public class BookController implements IBookController {
 
         delete(id);
         System.out.println("Sách đã được xóa.");
+    }
+
+
+    // Mượn sách cho thành viên
+    public void borrowBookForMember() {
+        System.out.print("Nhập ID thành viên: ");
+        String memberId = scanner.nextLine();
+        System.out.print("Nhập ID sách: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        Member member = findMemberById(memberId);
+        if (member != null) {
+            for (Book book : books) {
+                if (book.getId() == id && !book.getLoanStatus().isBorrowed()) {
+                    member.borrowBook(book);
+                    loanRecords.add(new LoanRecord(member, book)); // Lưu lại thông tin mượn sách
+                    book.getLoanStatus().borrow(); // Thay đổi trạng thái sách
+                    iReadWriteFile.writeBook(books); // Ghi lại danh sách sách sau khi mượn
+                    System.out.println("Sách đã được mượn thành công cho thành viên: " + member.getName());
+                    return;
+                }
+            }
+            System.out.println("Sách không có sẵn hoặc đã được mượn.");
+        } else {
+            System.out.println("Không tìm thấy thành viên với ID này.");
+        }
+    }
+
+    // Trả sách từ thành viên
+    public void returnBookFromMember() {
+        System.out.print("Nhập ID thành viên: ");
+        String memberId = scanner.nextLine();
+        System.out.print("Nhập ID sách: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        Member member = findMemberById(memberId);
+        if (member != null) {
+            for (Book book : member.getBorrowedBooks()) {
+                if (book.getId() == id) {
+                    member.returnBook(book);
+                    book.getLoanStatus().returnItem(); // Thay đổi trạng thái sách
+                    iReadWriteFile.writeBook(books); // Ghi lại danh sách sách sau khi trả
+                    System.out.println("Sách đã được trả thành công.");
+                    return;
+                }
+            }
+            System.out.println("Thành viên này không mượn sách này.");
+        } else {
+            System.out.println("Không tìm thấy thành viên với ID này.");
+        }
+    }
+
+
+    // Tìm thành viên
+    private Member findMemberById(String memberId) {
+        for (Member member : members) {
+            if (member.getMemberId().equals(memberId)) {
+                return member;
+            }
+        }
+        return null;
     }
 }

@@ -33,6 +33,7 @@ public class ReadWriteBook implements IReadWriteFile {
         }
         return books;
     }
+
     @Override
     public void writeBook(List<Book> books) {
         File file = new File("books.txt");
@@ -42,5 +43,4 @@ public class ReadWriteBook implements IReadWriteFile {
             throw new RuntimeException(e);
         }
     }
-
 }

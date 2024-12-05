@@ -1,4 +1,5 @@
 
+
 package controller;
 
 import model.Book;
@@ -17,4 +18,11 @@ public interface IGenerateController<T> {
 
     void deleteBook();
 
+    void borrowBook();
+
+    void returnBook();
+
+    void borrowBookForMember();
+
+    void returnBookFromMember();
 }
