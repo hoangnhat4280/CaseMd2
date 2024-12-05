@@ -8,6 +8,7 @@ import java.util.List;
 public interface IGenerateController<T> {
     List<T> list();
 
+
     void showBooks();
 
     void addBook();
@@ -15,4 +16,5 @@ public interface IGenerateController<T> {
     void updateBook();
 
     void deleteBook();
+
 }

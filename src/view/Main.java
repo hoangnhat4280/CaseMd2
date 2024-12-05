@@ -19,7 +19,7 @@ public class Main {
             System.out.println("3. Sửa sách");
             System.out.println("4. Xóa sách");
             System.out.println("5. Thoát");
-            System.out.print("Chọn một chức năng: ");
+            System.out.print("Chọn chức năng: ");
             choice = scanner.nextInt();
             scanner.nextLine();
 

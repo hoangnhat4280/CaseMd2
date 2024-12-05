@@ -53,19 +53,27 @@ public class BookController implements IBookController {
     }
 
     public Book getBookFromUser() {
-        System.out.print("Mời bạn nhập vào id: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); 
+        int id = -1;
+        boolean valid = false;
+
+        while (!valid) {
+            System.out.print("Mời bạn nhập vào id: ");
+            String input = scanner.nextLine();
+
+            if (input.matches("\\d+")) {
+                id = Integer.parseInt(input);
+                valid = true;
+            } else {
+                System.out.println("ID không phải số. Vui lòng nhập lại.");
+            }
+        }
 
         System.out.print("Tên sách: ");
         String title = scanner.nextLine();
-
         System.out.print("Tác giả: ");
         String author = scanner.nextLine();
-
         System.out.print("Giá sách: ");
         int price = scanner.nextInt();
-
         return new Book(id, title, author, price);
     }
 
@@ -76,9 +84,20 @@ public class BookController implements IBookController {
     }
 
     public void updateBook() {
-        System.out.print("Nhập id sách cần sửa: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // Đọc ký tự xuống dòng
+        int id = -1;
+        boolean valid = false;
+
+        while (!valid) {
+            System.out.print("Nhập id sách cần sửa: ");
+            String input = scanner.nextLine();
+
+            if (input.matches("\\d+")) {
+                id = Integer.parseInt(input);
+                valid = true;
+            } else {
+                System.out.println("ID không phải số. Vui lòng nhập lại.");
+            }
+        }
 
         System.out.println("Nhập thông tin sách mới:");
         Book updatedBook = getBookFromUser();
@@ -87,9 +106,20 @@ public class BookController implements IBookController {
     }
 
     public void deleteBook() {
-        System.out.print("Nhập id sách cần xóa: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
+        int id = -1;
+        boolean valid = false;
+
+        while (!valid) {
+            System.out.print("Nhập id sách cần xóa: ");
+            String input = scanner.nextLine();
+
+            if (input.matches("\\d+")) {
+                id = Integer.parseInt(input);
+                valid = true;
+            } else {
+                System.out.println("ID không phải số nguyên. Vui lòng nhập lại.");
+            }
+        }
 
         delete(id);
         System.out.println("Sách đã được xóa.");
