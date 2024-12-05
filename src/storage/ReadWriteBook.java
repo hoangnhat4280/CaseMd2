@@ -20,7 +20,7 @@ public class ReadWriteBook implements IReadWriteFile {
         return instance;
     }
 
-
+    @Override
     public List<Book> readBooks() {
         File file = new File("books.txt");
         List<Book> books = new ArrayList<>();
@@ -33,7 +33,7 @@ public class ReadWriteBook implements IReadWriteFile {
         }
         return books;
     }
-
+    @Override
     public void writeBook(List<Book> books) {
         File file = new File("books.txt");
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
