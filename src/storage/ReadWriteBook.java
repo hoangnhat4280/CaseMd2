@@ -10,7 +10,6 @@ public class ReadWriteBook implements IReadWriteFile {
 
     private ReadWriteBook() {
     }
-
     private static ReadWriteBook instance;
 
     public static ReadWriteBook getInstance() {

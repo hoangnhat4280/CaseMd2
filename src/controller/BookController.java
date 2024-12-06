@@ -5,6 +5,7 @@ import model.BookLoan;
 import model.LoanRecord;
 import model.Member;
 import storage.IReadWriteFile;
+import storage.CSVReadWriteFile;
 import storage.ReadWriteBook;
 
 import java.util.ArrayList;
@@ -13,8 +14,14 @@ import java.util.Optional;
 import java.util.Scanner;
 
 public class BookController implements IBookController {
-    static IReadWriteFile iReadWriteFile = ReadWriteBook.getInstance();
-    public static List<Book> books = iReadWriteFile.readBooks();
+    // Đọc và ghi từ file nhị phân
+    static IReadWriteFile binaryFileStorage = ReadWriteBook.getInstance();
+
+    // Đọc và ghi từ file CSV
+    static IReadWriteFile csvFileStorage = new CSVReadWriteFile();
+
+    // Sử dụng list chung để chứa sách
+    public static List<Book> books = binaryFileStorage.readBooks();  // Mặc định đọc từ file nhị phân
     private static List<Member> members = new ArrayList<>();
     private static List<LoanRecord> loanRecords = new ArrayList<>();
     private Scanner scanner = new Scanner(System.in);
@@ -27,7 +34,9 @@ public class BookController implements IBookController {
     @Override
     public void add(Book book) {
         books.add(book);
-        iReadWriteFile.writeBook(books);
+        // Ghi vào cả hai file CSV và nhị phân
+        binaryFileStorage.writeBook(books);
+        csvFileStorage.writeBook(books);
     }
 
     public void update(int id, Book updatedBook) {
@@ -40,13 +49,17 @@ public class BookController implements IBookController {
             book.setTitle(updatedBook.getTitle());
             book.setAuthor(updatedBook.getAuthor());
             book.setPrice(updatedBook.getPrice());
-            iReadWriteFile.writeBook(books);
+            // Ghi vào cả hai file CSV và nhị phân
+            binaryFileStorage.writeBook(books);
+            csvFileStorage.writeBook(books);
         }
     }
 
     public void delete(int id) {
         books.removeIf(book -> book.getId() == id);
-        iReadWriteFile.writeBook(books);
+        // Ghi vào cả hai file CSV và nhị phân
+        binaryFileStorage.writeBook(books);
+        csvFileStorage.writeBook(books);
     }
 
     public void showBooks() {
@@ -214,6 +227,4 @@ public class BookController implements IBookController {
             System.out.println("Không thể trả sách này.");
         }
     }
-
-
 }
