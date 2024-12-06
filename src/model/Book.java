@@ -1,21 +1,22 @@
+
+
 package model;
 
 import java.io.Serializable;
 
 public class Book implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private int id;
     private String title;
     private String author;
     private int price;
-    private LoanStatus loanStatus;
 
     public Book(int id, String title, String author, int price) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.price = price;
-        this.loanStatus = new LoanStatus();
     }
 
     public int getId() {
@@ -50,10 +51,6 @@ public class Book implements Serializable {
         this.price = price;
     }
 
-    public LoanStatus getLoanStatus() {
-        return loanStatus;
-    }
-
     @Override
     public String toString() {
         return "Book{" +
@@ -61,7 +58,6 @@ public class Book implements Serializable {
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", price=" + price +
-                ", loanStatus=" + (loanStatus.isBorrowed() ? "Borrowed" : "Available") +
                 '}';
     }
 }

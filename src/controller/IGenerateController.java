@@ -1,8 +1,5 @@
 
-
 package controller;
-
-import model.Book;
 
 import java.util.List;
 
@@ -18,11 +15,11 @@ public interface IGenerateController<T> {
 
     void deleteBook();
 
+    void addMember();
+
+    void showMembers();
+
     void borrowBook();
 
     void returnBook();
-
-    void borrowBookForMember();
-
-    void returnBookFromMember();
 }

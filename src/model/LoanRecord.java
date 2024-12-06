@@ -1,8 +1,5 @@
 package model;
 
-import model.Book;
-import model.Member;
-
 public class LoanRecord {
     private Member member;
     private Book book;
@@ -16,15 +13,12 @@ public class LoanRecord {
         return member;
     }
 
-    public void setMember(Member member) {
-        this.member = member;
-    }
-
     public Book getBook() {
         return book;
     }
 
-    public void setBook(Book book) {
-        this.book = book;
+    @Override
+    public String toString() {
+        return "LoanRecord{" + "member=" + member + ", book=" + book + '}';
     }
 }

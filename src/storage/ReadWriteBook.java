@@ -28,7 +28,7 @@ public class ReadWriteBook implements IReadWriteFile {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
                 books = (List<Book>) ois.readObject();
             } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                System.out.println("Error reading the books file: " + e.getMessage());
             }
         }
         return books;
@@ -37,10 +37,17 @@ public class ReadWriteBook implements IReadWriteFile {
     @Override
     public void writeBook(List<Book> books) {
         File file = new File("books.txt");
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-            oos.writeObject(books);
+        try {
+            // Kiểm tra nếu file đã tồn tại thì xóa nó để ghi lại
+            if (file.exists()) {
+                file.delete();
+            }
+            // Tạo lại file mới và ghi danh sách sách vào file
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                oos.writeObject(books);
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error writing to books file", e);
         }
     }
 }

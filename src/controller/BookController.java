@@ -1,6 +1,7 @@
 package controller;
 
 import model.Book;
+import model.BookLoan;
 import model.LoanRecord;
 import model.Member;
 import storage.IReadWriteFile;
@@ -14,30 +15,11 @@ import java.util.Scanner;
 public class BookController implements IBookController {
     static IReadWriteFile iReadWriteFile = ReadWriteBook.getInstance();
     public static List<Book> books = iReadWriteFile.readBooks();
-    private List<Member> members;  // Danh sách thành viên
-    private List<LoanRecord> loanRecords;  // Danh sách loanRecords
+    private static List<Member> members = new ArrayList<>(); // Danh sách thành viên
+    private static List<LoanRecord> loanRecords = new ArrayList<>(); // Danh sách mượn sách
     private Scanner scanner = new Scanner(System.in);
 
-    // Constructor thêm members và loanRecords nếu cần thiết
-    public BookController(List<Member> members, List<LoanRecord> loanRecords) {
-        this.members = members;
-        this.loanRecords = loanRecords;
-    }
-
-    public BookController() {
-        // Khởi tạo mặc định nếu chưa có members và loanRecords
-        this.members = new ArrayList<>();
-        this.loanRecords = new ArrayList<>();
-    }
-    @Override
-    public void borrowBook() {
-    }
-
-    @Override
-    public void returnBook() {
-
-    }
-
+    // Các phương thức của BookController
     @Override
     public List<Book> list() {
         return books;
@@ -77,7 +59,9 @@ public class BookController implements IBookController {
         }
     }
 
-    // Lấy thông tin sách từ người dùng
+
+
+    // Các phương thức thêm sách và cập nhật sách đã có
     public Book getBookFromUser() {
         int id = -1;
         boolean valid = false;
@@ -151,66 +135,86 @@ public class BookController implements IBookController {
         System.out.println("Sách đã được xóa.");
     }
 
-
-    // Mượn sách cho thành viên
-    public void borrowBookForMember() {
+    // Thêm thành viên
+    public void addMember() {
         System.out.print("Nhập ID thành viên: ");
         String memberId = scanner.nextLine();
-        System.out.print("Nhập ID sách: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
+        System.out.print("Nhập tên thành viên: ");
+        String name = scanner.nextLine();
+        Member member = new Member(memberId, name);
+        members.add(member);
+        System.out.println("Thành viên đã được thêm.");
+    }
 
-        Member member = findMemberById(memberId);
-        if (member != null) {
-            for (Book book : books) {
-                if (book.getId() == id && !book.getLoanStatus().isBorrowed()) {
-                    member.borrowBook(book);
-                    loanRecords.add(new LoanRecord(member, book)); // Lưu lại thông tin mượn sách
-                    book.getLoanStatus().borrow(); // Thay đổi trạng thái sách
-                    iReadWriteFile.writeBook(books); // Ghi lại danh sách sách sau khi mượn
-                    System.out.println("Sách đã được mượn thành công cho thành viên: " + member.getName());
-                    return;
-                }
-            }
-            System.out.println("Sách không có sẵn hoặc đã được mượn.");
+    // Hiển thị thành viên
+    public void showMembers() {
+        if (members.isEmpty()) {
+            System.out.println("Không có thành viên nào.");
         } else {
-            System.out.println("Không tìm thấy thành viên với ID này.");
+            System.out.println("Danh sách thành viên:");
+            members.forEach(System.out::println);
         }
     }
 
-    // Trả sách từ thành viên
-    public void returnBookFromMember() {
+    // Mượn sách
+    public void borrowBook() {
         System.out.print("Nhập ID thành viên: ");
         String memberId = scanner.nextLine();
-        System.out.print("Nhập ID sách: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
+        Member member = members.stream().filter(m -> m.getMemberId().equals(memberId)).findFirst().orElse(null);
 
-        Member member = findMemberById(memberId);
-        if (member != null) {
-            for (Book book : member.getBorrowedBooks()) {
-                if (book.getId() == id) {
-                    member.returnBook(book);
-                    book.getLoanStatus().returnItem(); // Thay đổi trạng thái sách
-                    iReadWriteFile.writeBook(books); // Ghi lại danh sách sách sau khi trả
-                    System.out.println("Sách đã được trả thành công.");
-                    return;
-                }
-            }
-            System.out.println("Thành viên này không mượn sách này.");
+        if (member == null) {
+            System.out.println("Không tìm thấy thành viên.");
+            return;
+        }
+
+        System.out.print("Nhập ID sách cần mượn: ");
+        int bookId = scanner.nextInt();
+        scanner.nextLine();  // Clear buffer
+        Book book = books.stream().filter(b -> b.getId() == bookId).findFirst().orElse(null);
+
+        if (book == null) {
+            System.out.println("Không tìm thấy sách.");
+            return;
+        }
+
+        BookLoan bookLoan = new BookLoan();
+        if (bookLoan.borrow()) {
+            member.borrowBook(book);
+            loanRecords.add(new LoanRecord(member, book));
+            System.out.println("Mượn sách thành công.");
         } else {
-            System.out.println("Không tìm thấy thành viên với ID này.");
+            System.out.println("Sách này đã được mượn.");
         }
     }
 
+    // Trả sách
+    public void returnBook() {
+        System.out.print("Nhập ID thành viên: ");
+        String memberId = scanner.nextLine();
+        Member member = members.stream().filter(m -> m.getMemberId().equals(memberId)).findFirst().orElse(null);
 
-    // Tìm thành viên
-    private Member findMemberById(String memberId) {
-        for (Member member : members) {
-            if (member.getMemberId().equals(memberId)) {
-                return member;
-            }
+        if (member == null) {
+            System.out.println("Không tìm thấy thành viên.");
+            return;
         }
-        return null;
+
+        System.out.print("Nhập ID sách cần trả: ");
+        int bookId = scanner.nextInt();
+        scanner.nextLine();  // Clear buffer
+        Book book = books.stream().filter(b -> b.getId() == bookId).findFirst().orElse(null);
+
+        if (book == null || !member.getBorrowedBooks().contains(book)) {
+            System.out.println("Không tìm thấy sách này trong danh sách mượn của bạn.");
+            return;
+        }
+
+        BookLoan bookLoan = new BookLoan();
+        if (bookLoan.returnItem()) {
+            member.returnBook(book);
+            loanRecords.removeIf(record -> record.getBook().equals(book) && record.getMember().equals(member));
+            System.out.println("Trả sách thành công.");
+        } else {
+            System.out.println("Không thể trả sách này.");
+        }
     }
 }
