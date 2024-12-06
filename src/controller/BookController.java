@@ -15,11 +15,10 @@ import java.util.Scanner;
 public class BookController implements IBookController {
     static IReadWriteFile iReadWriteFile = ReadWriteBook.getInstance();
     public static List<Book> books = iReadWriteFile.readBooks();
-    private static List<Member> members = new ArrayList<>(); // Danh sách thành viên
-    private static List<LoanRecord> loanRecords = new ArrayList<>(); // Danh sách mượn sách
+    private static List<Member> members = new ArrayList<>();
+    private static List<LoanRecord> loanRecords = new ArrayList<>();
     private Scanner scanner = new Scanner(System.in);
 
-    // Các phương thức của BookController
     @Override
     public List<Book> list() {
         return books;
@@ -59,9 +58,6 @@ public class BookController implements IBookController {
         }
     }
 
-
-
-    // Các phương thức thêm sách và cập nhật sách đã có
     public Book getBookFromUser() {
         int id = -1;
         boolean valid = false;
@@ -169,7 +165,7 @@ public class BookController implements IBookController {
 
         System.out.print("Nhập ID sách cần mượn: ");
         int bookId = scanner.nextInt();
-        scanner.nextLine();  // Clear buffer
+        scanner.nextLine();
         Book book = books.stream().filter(b -> b.getId() == bookId).findFirst().orElse(null);
 
         if (book == null) {
@@ -177,16 +173,16 @@ public class BookController implements IBookController {
             return;
         }
 
-        BookLoan bookLoan = new BookLoan();
-        if (bookLoan.borrow()) {
-            member.borrowBook(book);
-            loanRecords.add(new LoanRecord(member, book));
-            System.out.println("Mượn sách thành công.");
-        } else {
+        if (book.isBorrowed()) {  // Kiểm tra trạng thái sách
             System.out.println("Sách này đã được mượn.");
+        } else {
+            book.borrow();  // Đánh dấu sách là đã mượn
+            member.borrowBook(book);  // Thêm sách vào danh sách mượn của thành viên
+            books.remove(book);  // Xóa sách khỏi danh sách sách có sẵn
+            loanRecords.add(new LoanRecord(member, book));  // Thêm bản ghi mượn sách
+            System.out.println("Mượn sách thành công.");
         }
     }
-
     // Trả sách
     public void returnBook() {
         System.out.print("Nhập ID thành viên: ");
@@ -200,21 +196,24 @@ public class BookController implements IBookController {
 
         System.out.print("Nhập ID sách cần trả: ");
         int bookId = scanner.nextInt();
-        scanner.nextLine();  // Clear buffer
-        Book book = books.stream().filter(b -> b.getId() == bookId).findFirst().orElse(null);
+        scanner.nextLine();
+        Book book = member.getBorrowedBooks().stream().filter(b -> b.getId() == bookId).findFirst().orElse(null);
 
-        if (book == null || !member.getBorrowedBooks().contains(book)) {
-            System.out.println("Không tìm thấy sách này trong danh sách mượn của bạn.");
+        if (book == null) {
+            System.out.println("Sách này không nằm trong danh sách mượn của bạn.");
             return;
         }
 
-        BookLoan bookLoan = new BookLoan();
-        if (bookLoan.returnItem()) {
-            member.returnBook(book);
+        if (book.isBorrowed()) {
+            book.returnBook();  // Trả lại sách, đánh dấu là chưa mượn
+            member.returnBook(book);  // Xóa sách khỏi danh sách mượn của thành viên
+            books.add(book);  // Thêm sách lại vào danh sách sách có sẵn
             loanRecords.removeIf(record -> record.getBook().equals(book) && record.getMember().equals(member));
             System.out.println("Trả sách thành công.");
         } else {
             System.out.println("Không thể trả sách này.");
         }
     }
+
+
 }

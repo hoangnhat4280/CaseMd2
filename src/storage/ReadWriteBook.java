@@ -38,11 +38,10 @@ public class ReadWriteBook implements IReadWriteFile {
     public void writeBook(List<Book> books) {
         File file = new File("books.txt");
         try {
-            // Kiểm tra nếu file đã tồn tại thì xóa nó để ghi lại
+            // Ktra nếu file tồn tại thì xóa nó để ghi lại
             if (file.exists()) {
                 file.delete();
             }
-            // Tạo lại file mới và ghi danh sách sách vào file
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
                 oos.writeObject(books);
             }
