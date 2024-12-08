@@ -1,4 +1,3 @@
-
 package view;
 
 import controller.BookController;
@@ -57,7 +56,7 @@ public class Main {
                     System.out.println("Thoát chương trình.");
                     return;
                 default:
-                    System.out.println("Lựa chọn không phù hợp , vui lòng nhập lại");
+                    System.out.println("Lựa chọn không phù hợp.");
             }
         }
     }

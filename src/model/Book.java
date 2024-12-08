@@ -55,32 +55,28 @@ public class Book implements Serializable {
         return isBorrowed;
     }
 
-    // Setter cho trạng thái mượn sách
     public void setBorrowed(boolean isBorrowed) {
         this.isBorrowed = isBorrowed;
     }
 
-    // Phương thức mượn sách
     public void borrow() {
         if (!isBorrowed) {
-            this.isBorrowed = true;  // Đánh dấu sách đã được mượn
+            this.isBorrowed = true;
             System.out.println("Sách đã được mượn thành công.");
         } else {
             System.out.println("Sách này đã được mượn.");
         }
     }
 
-    // Phương thức trả sách
     public void returnBook() {
         if (isBorrowed) {
-            this.isBorrowed = false;  // Đánh dấu sách đã được trả lại
+            this.isBorrowed = false;
             System.out.println("Sách đã được trả thành công.");
         } else {
             System.out.println("Sách chưa được mượn.");
         }
     }
 
-    // In thông tin sách
     @Override
     public String toString() {
         return "Book{" +

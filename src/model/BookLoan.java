@@ -4,22 +4,20 @@ package model;
 public class BookLoan {
     private boolean isBorrowed = false; // Trạng thái mượn sách
 
-    // Phương thức mượn sách
     public boolean borrow() {
         if (isBorrowed) {
-            return false; // Sách đã được mượn
+            return false;
         } else {
             isBorrowed = true;
-            return true; // Mượn sách thành công
+            return true;
         }
     }
 
-    // Phương thức trả sách
     public boolean returnItem() {
         if (isBorrowed) {
             isBorrowed = false;
-            return true; // Trả sách thành công
+            return true;
         }
-        return false; // Không thể trả sách nếu nó chưa được mượn
+        return false;
     }
 }
