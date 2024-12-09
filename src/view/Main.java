@@ -2,7 +2,6 @@ package view;
 
 import controller.BookController;
 import controller.IBookController;
-
 import java.util.Scanner;
 
 public class Main {
@@ -23,7 +22,7 @@ public class Main {
             System.out.println("7. Mượn sách");
             System.out.println("8. Trả sách");
             System.out.println("9. Thoát");
-            System.out.print("Chọn chức năng: ");
+            System.out.print("Vui lòng nhập lựa chọn: ");
             choice = scanner.nextInt();
             scanner.nextLine();
 

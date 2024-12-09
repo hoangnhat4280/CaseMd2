@@ -1,17 +1,13 @@
 package storage;
-
 import model.Book;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReadWriteBook implements IReadWriteFile {
-
     private ReadWriteBook() {
     }
     private static ReadWriteBook instance;
-
     public static ReadWriteBook getInstance() {
         if (instance == null) {
             instance = new ReadWriteBook();
@@ -37,7 +33,6 @@ public class ReadWriteBook implements IReadWriteFile {
     public void writeBook(List<Book> books) {
         File file = new File("books.txt");
         try {
-            // Ktra nếu file tồn tại thì xóa nó để ghi lại
             if (file.exists()) {
                 file.delete();
             }

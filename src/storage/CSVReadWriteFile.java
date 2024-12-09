@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CSVReadWriteFile implements IReadWriteFile {
-
     private static final String COMMA_DELIMITER = ",";
     private static final String NEW_LINE_SEPARATOR = "\n";
     private static final String FILE_HEADER = "id,title,author,price,isBorrowed";
@@ -17,7 +16,6 @@ public class CSVReadWriteFile implements IReadWriteFile {
         List<Book> books = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader("books.csv"))) {
             String line;
-            // Bỏ qua header
             br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(COMMA_DELIMITER);

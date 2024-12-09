@@ -26,7 +26,6 @@ public class BookController implements IBookController {
     private final NotificationService notificationService = new NotificationService();
 
     public BookController() {
-        // Add a default console notification observer
         notificationService.addObserver(new ConsoleNotification());
     }
 
@@ -43,9 +42,27 @@ public class BookController implements IBookController {
     }
 
     public void addBook() {
-        System.out.print("Mời bạn nhập vào id: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
+        Book book = getBookFromUser();
+        add(book);
+        System.out.println("Sách đã được thêm.");
+    }
+
+    public Book getBookFromUser() {
+        int id = -1;
+        boolean valid = false;
+
+        while (!valid) {
+            System.out.print("Mời bạn nhập vào id: ");
+            String input = scanner.nextLine();
+
+            if (input.matches("\\d+")) {
+                id = Integer.parseInt(input);
+                valid = true;
+            } else {
+                System.out.println("ID không phải số. Vui lòng nhập lại.");
+            }
+        }
+
         System.out.print("Tên sách: ");
         String title = scanner.nextLine();
         System.out.print("Tác giả: ");
@@ -54,27 +71,30 @@ public class BookController implements IBookController {
         int price = scanner.nextInt();
         scanner.nextLine();
 
-        // Create book using factory
-        Book book = BookFactory.createBook(id, title, author, price);
-        add(book);
-        System.out.println("Sách đã được thêm.");
+        return BookFactory.createBook(id, title, author, price);
     }
 
     public void updateBook() {
-        System.out.print("Nhập id sách cần sửa: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-        System.out.print("Nhập tên sách mới: ");
-        String title = scanner.nextLine();
-        System.out.print("Nhập tác giả mới: ");
-        String author = scanner.nextLine();
-        System.out.print("Nhập giá mới: ");
-        int price = scanner.nextInt();
-        scanner.nextLine();
+        int id = -1;
+        boolean valid = false;
 
-        Optional<Book> bookOpt = books.stream().filter(b -> b.getId() == id).findFirst();
+        while (!valid) {
+            System.out.print("Nhập id sách cần sửa: ");
+            String input = scanner.nextLine();
+
+            if (input.matches("\\d+")) {
+                id = Integer.parseInt(input);
+                valid = true;
+            } else {
+                System.out.println("ID không phải số. Vui lòng nhập lại.");
+            }
+        }
+
+        int finalId = id;
+        Optional<Book> bookOpt = books.stream().filter(b -> b.getId() == finalId).findFirst();
         if (bookOpt.isPresent()) {
-            Book updatedBook = BookFactory.createBook(id, title, author, price);
+            System.out.println("Nhập thông tin sách mới:");
+            Book updatedBook = getBookFromUser();
             update(id, updatedBook);
             System.out.println("Sách đã được sửa.");
         } else {
@@ -95,9 +115,21 @@ public class BookController implements IBookController {
     }
 
     public void deleteBook() {
-        System.out.print("Nhập ID sách cần xóa: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
+        int id = -1;
+        boolean valid = false;
+
+        while (!valid) {
+            System.out.print("Nhập ID sách cần xóa: ");
+            String input = scanner.nextLine();
+
+            if (input.matches("\\d+")) {
+                id = Integer.parseInt(input);
+                valid = true;
+            } else {
+                System.out.println("ID không phải số nguyên. Vui lòng nhập lại.");
+            }
+        }
+
         delete(id);
         System.out.println("Sách đã được xóa.");
     }
@@ -117,7 +149,6 @@ public class BookController implements IBookController {
         }
     }
 
-    // Member-related methods
     public void addMember() {
         System.out.print("Nhập ID thành viên: ");
         String memberId = scanner.nextLine();
@@ -170,8 +201,6 @@ public class BookController implements IBookController {
             System.out.println("Mượn sách thành công.");
             csvFileStorage.writeBook(books);
 
-
-            // Notify observers
             notificationService.notifyObservers("Thành viên " + member.getName() + " đã mượn sách: " + book.getTitle());
         }
     }

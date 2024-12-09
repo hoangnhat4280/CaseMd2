@@ -2,7 +2,7 @@
 package model;
 
 public class BookLoan {
-    private boolean isBorrowed = false; // Trạng thái mượn sách
+    private boolean isBorrowed = false;
 
     public boolean borrow() {
         if (isBorrowed) {
